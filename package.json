@@ -1,0 +1,12 @@
+{
+  "name": "game-server",
+  "version": "1.0.0",
+  "main": "vercel-function.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node vercel-function.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  }
+}

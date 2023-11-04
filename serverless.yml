@@ -1,0 +1,22 @@
+service: game-server
+plugins:
+  - serverless-websockets-plugin
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  websocket:
+    handler: websocket.handler
+    events:
+      - websocket: connect
+      - websocket: disconnect
+      - websocket: default
+
+custom:
+  websockets:
+    development:
+      endpoint: "wss://game-server-backsoul.vercel.app/dev"
+    production:
+      endpoint: "wss://game-server-backsoul.vercel.app/prod"
