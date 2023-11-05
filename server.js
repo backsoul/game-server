@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const { Server: WebSocketServer } = require('ws');
 
@@ -10,9 +12,8 @@ const server = express()
 
 const wss = new WebSocketServer({ server });
 const clients = new Set();
-
 // Definir la tasa de FPS deseada
-const targetFPS = 25;
+const targetFPS = 30;
 const msPerFrame = 1000 / targetFPS;
 
 wss.on('connection', (ws) => {
