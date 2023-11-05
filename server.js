@@ -21,8 +21,8 @@ wss.on('connection', (ws) => {
     console.log('Client connected');
 
     ws.on('message', (data) => {
-      const parsedData = { /* Tu objeto de datos aquí */ };
-      const jsonString = JSON.stringify(parsedData);
+      const jsonParse = JSON.parse(data);
+      const jsonString = JSON.stringify(jsonParse);
   
       for (const client of clients) {
           if (client.readyState === ws.OPEN) {
