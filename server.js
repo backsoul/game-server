@@ -1,5 +1,3 @@
-'use strict';
-
 const express = require('express');
 const { Server: WebSocketServer } = require('ws');
 
@@ -13,8 +11,11 @@ const server = express()
 const wss = new WebSocketServer({ server });
 const clients = new Set();
 
+// Definir la tasa de FPS deseada
+const targetFPS = 25;
+const msPerFrame = 1000 / targetFPS;
+
 wss.on('connection', (ws) => {
-    // Cuando un cliente se conecta, agregamos su conexión al conjunto
     clients.add(ws);
     console.log('Client connected');
 
@@ -22,20 +23,25 @@ wss.on('connection', (ws) => {
         console.log('Data received', data);
         const parsedData = JSON.parse(data);
         console.log('Parsed JSON Data:', parsedData);
-
-        // Recorremos el conjunto de clientes y enviamos el mensaje a cada uno
-        for (const client of clients) {
-            // Verificamos si el cliente todavía está conectado antes de enviarle el mensaje
-            if (client.readyState === ws.OPEN) { // Cambio aquí
-                const jsonString = JSON.stringify(parsedData);
-                client.send(jsonString);
-            }
-        }
     });
 
     ws.on('close', () => {
-        // Cuando un cliente se desconecta, lo eliminamos del conjunto
         clients.delete(ws);
         console.log('Client disconnected');
     });
 });
+
+// Función para enviar mensajes a 30 FPS
+function sendMessages() {
+    const parsedData = { /* Tu objeto de datos aquí */ };
+    const jsonString = JSON.stringify(parsedData);
+
+    for (const client of clients) {
+        if (client.readyState === ws.OPEN) {
+            client.send(jsonString);
+        }
+    }
+}
+
+// Configurar un intervalo para enviar mensajes a la tasa de FPS deseada
+setInterval(sendMessages, msPerFrame);
