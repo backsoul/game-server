@@ -15,7 +15,7 @@ const clients = new Set();
 const messageQueue = [];
 let lastSendTime = Date.now();
 
-function processMessageQueue() {
+function processMessageQueue(ws) {
     const now = Date.now();
     if (now - lastSendTime >= 1000) { // Enviar mensajes una vez por segundo
         for (const client of clients) {
@@ -35,7 +35,7 @@ wss.on('connection', (ws) => {
 
     ws.on('message', (data) => {
         messageQueue.push(JSON.parse(data));
-        processMessageQueue();
+        processMessageQueue(ws);
     });
 
     ws.on('close', () => {
