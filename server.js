@@ -12,25 +12,30 @@ const server = express()
 
 const wss = new WebSocketServer({ server });
 const clients = new Set();
-// Definir la tasa de FPS deseada
-const targetFPS = 30;
-const msPerFrame = 1000 / targetFPS;
+const messageQueue = [];
+let lastSendTime = Date.now();
+
+function processMessageQueue() {
+    const now = Date.now();
+    if (now - lastSendTime >= 1000) { // Enviar mensajes una vez por segundo
+        for (const client of clients) {
+            if (client.readyState === WebSocket.OPEN) {
+                const messagesToSend = messageQueue.slice();
+                client.send(JSON.stringify(messagesToSend));
+            }
+        }
+        messageQueue.length = 0; // Limpiar la cola
+        lastSendTime = now;
+    }
+}
 
 wss.on('connection', (ws) => {
     clients.add(ws);
     console.log('Client connected');
 
     ws.on('message', (data) => {
-      const jsonParse = JSON.parse(data);
-      const jsonString = JSON.stringify(jsonParse);
-  
-      for (const client of clients) {
-          if (client.readyState === ws.OPEN) {
-            setInterval(() =>{
-              client.send(jsonString);
-            }, msPerFrame);
-          }
-      }
+        messageQueue.push(JSON.parse(data));
+        processMessageQueue();
     });
 
     ws.on('close', () => {
