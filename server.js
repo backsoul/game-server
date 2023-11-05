@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const { Server: WebSocketServer } = require('ws'); // Importa la clase WebSocketServer desde 'ws'
+const { Server: WebSocketServer } = require('ws');
 
 const PORT = process.env.PORT || 3000;
 const INDEX = '/index.html';
@@ -10,7 +10,7 @@ const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-const wss = new WebSocketServer({ server }); // Utiliza WebSocketServer en lugar de Server
+const wss = new WebSocketServer({ server });
 const clients = new Set();
 
 wss.on('connection', (ws) => {
@@ -26,7 +26,7 @@ wss.on('connection', (ws) => {
         // Recorremos el conjunto de clientes y enviamos el mensaje a cada uno
         for (const client of clients) {
             // Verificamos si el cliente todavía está conectado antes de enviarle el mensaje
-            if (client.readyState === WebSocket.OPEN) {
+            if (client.readyState === ws.OPEN) { // Cambio aquí
                 const jsonString = JSON.stringify(parsedData);
                 client.send(jsonString);
             }
@@ -39,4 +39,3 @@ wss.on('connection', (ws) => {
         console.log('Client disconnected');
     });
 });
-
