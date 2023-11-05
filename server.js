@@ -19,7 +19,7 @@ function processMessageQueue() {
     const now = Date.now();
     if (now - lastSendTime >= 1000) { // Enviar mensajes una vez por segundo
         for (const client of clients) {
-            if (client.readyState === WebSocket.OPEN) {
+            if (client.readyState === ws.OPEN) {
                 const messagesToSend = messageQueue.slice();
                 client.send(JSON.stringify(messagesToSend));
             }
